@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>
+// tempo de ciclo 53 segundos. 30 verde, 3 amarelo, 20 vermelho
+const int tempoVerm = 20;
+const int tempoVerde = 30;
+const int tempoAmar = 3;
+
+const int semaforos = 4;  // # Semáforos
+
+typedef int[0,3] id_t;
+
+
+chan verde[semaforos], vermelho[semaforos];
+</declaration>
+	<template>
+		<name x="5" y="5">SemaforoVR</name>
+		<parameter>const id_t id</parameter>
+		<declaration>clock tempo; // Relógio para controlar o semáforo
+</declaration>
+		<location id="id0" x="-467" y="-501" color="#ff0000">
+			<name x="-535" y="-535">Vermelho</name>
+		</location>
+		<location id="id1" x="-297" y="-501" color="#00ff00">
+			<name x="-314" y="-535">Verde</name>
+		</location>
+		<location id="id2" x="-127" y="-501" color="#ffff00">
+			<name x="-127" y="-535">Amarelo</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id3">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-433" y="-612">tempo &gt;= tempoAmar</label>
+			<label kind="assignment" x="-407" y="-595">tempo = 0</label>
+			<nail x="-152" y="-569"/>
+			<nail x="-441" y="-569"/>
+		</transition>
+		<transition id="id4">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-280" y="-467">tempo &gt;= tempoVerde</label>
+			<label kind="synchronisation" x="-280" y="-518">vermelho[id]!</label>
+			<label kind="assignment" x="-280" y="-450">tempo = 0</label>
+		</transition>
+		<transition id="id5">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-450" y="-484">tempo&gt;=tempoVerm</label>
+			<label kind="synchronisation" x="-433" y="-518">verde[id]!</label>
+			<label kind="assignment" x="-450" y="-467">tempo = 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Carro</name>
+		<declaration>clock time;
+int postoto0 = 108; //1200 metros a 40km/h = 108segundos
+int sem0to1 = 120; //130 metros a 40km/h aproximadamente 12segundos
+int sem1to2 = 135; //160 metros a 40km/h aproximadamente 15segundos
+int sem2to3 = 151; //170 metros a 40km/h aproximadamente 16segundos
+int sem3toRota = 159; //90 metros a 40km/h aproximadamente 8segundos
+
+</declaration>
+		<location id="id6" x="-186" y="-51">
+			<name x="-254" y="-77">Posto</name>
+		</location>
+		<location id="id7" x="-42" y="-51">
+			<name x="-85" y="-85">Mover</name>
+		</location>
+		<location id="id8" x="85" y="-229">
+			<name x="75" y="-263">Sinal0</name>
+		</location>
+		<location id="id9" x="161" y="-170">
+			<name x="152" y="-204">Sinal1</name>
+		</location>
+		<location id="id10" x="204" y="-51">
+			<name x="194" y="-85">Sinal2</name>
+		</location>
+		<location id="id11" x="127" y="25">
+			<name x="117" y="-9">Sinal3</name>
+		</location>
+		<location id="id12" x="272" y="25">
+			<name x="262" y="-9">RotaUni</name>
+		</location>
+		<init ref="id6"/>
+		<transition id="id13">
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="212" y="-331">vermelho[0]?</label>
+			<nail x="246" y="-246"/>
+			<nail x="204" y="-331"/>
+			<nail x="59" y="-340"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="136" y="34">time &gt;= sem3toRota</label>
+			<label kind="synchronisation" x="145" y="8">verde[3]?</label>
+		</transition>
+		<transition id="id15">
+			<source ref="id7"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-25" y="59">time&gt;= sem2to3</label>
+			<nail x="-34" y="59"/>
+			<nail x="68" y="59"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id7"/>
+			<target ref="id10"/>
+			<label kind="guard" x="59" y="-76">time &gt;=sem1to2</label>
+		</transition>
+		<transition id="id17">
+			<source ref="id10"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="8" y="-42">verde[2]?</label>
+			<nail x="8" y="-8"/>
+		</transition>
+		<transition id="id18">
+			<source ref="id9"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="42" y="-161">verde[1]?</label>
+		</transition>
+		<transition id="id19">
+			<source ref="id7"/>
+			<target ref="id9"/>
+			<label kind="guard" x="127" y="-136">time &gt;= sem0to1</label>
+			<nail x="17" y="-59"/>
+		</transition>
+		<transition id="id20">
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-34" y="-178">verde[0]?</label>
+		</transition>
+		<transition id="id21">
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-153" y="-254">time&gt;=postoto0</label>
+			<nail x="-85" y="-169"/>
+			<nail x="-110" y="-195"/>
+			<nail x="-76" y="-212"/>
+		</transition>
+		<transition id="id22">
+			<source ref="id6"/>
+			<target ref="id7"/>
+		</transition>
+	</template>
+	<system>
+system SemaforoVR,Carro;
+
+</system>
+	<queries>
+		<query>
+			<formula>A[] not(SemaforoVR(1).Verde and Carro.Posto)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-04-26 00:35:29 -0300">
+			</result>
+		</query>
+	</queries>
+</nta>
